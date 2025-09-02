@@ -8,123 +8,123 @@
   :root {
     /* Main background - soft cream white */
     --background: 45 23% 97%;
-    --foreground: 230 25% 18%;
+    --foreground: 270 15% 25%;
 
     /* Cards with subtle warmth */
     --card: 0 0% 100%;
-    --card-foreground: 230 25% 18%;
+    --card-foreground: 270 15% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 230 25% 18%;
+    --popover-foreground: 270 15% 25%;
 
-    /* ChatPal primary - friendly blue */
-    --primary: 210 89% 52%;
+    /* ChatPal primary - magical purple */
+    --primary: 270 85% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 89% 65%;
+    --primary-glow: 270 75% 70%;
 
-    /* Secondary - soft green for success/positive */
-    --secondary: 142 76% 36%;
+    /* Secondary - soft teal for success/positive */
+    --secondary: 180 65% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Muted - gentle gray-blue */
-    --muted: 215 25% 92%;
-    --muted-foreground: 230 15% 45%;
+    /* Muted - gentle purple-gray */
+    --muted: 260 20% 92%;
+    --muted-foreground: 270 15% 45%;
 
-    /* Accent - warm orange for highlights */
-    --accent: 32 95% 58%;
+    /* Accent - warm pink for highlights */
+    --accent: 320 75% 65%;
     --accent-foreground: 0 0% 100%;
 
     /* Chat colors */
-    --chat-user: 32 95% 58%;
+    --chat-user: 320 75% 65%;
     --chat-user-foreground: 0 0% 100%;
     --chat-bot: 0 0% 100%;
-    --chat-bot-foreground: 230 25% 18%;
+    --chat-bot-foreground: 270 15% 25%;
 
     /* Fun gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(210 89% 52%), hsl(185 84% 55%));
-    --gradient-chat: linear-gradient(180deg, hsl(45 23% 97%), hsl(210 25% 98%));
-    --gradient-accent: linear-gradient(45deg, hsl(32 95% 58%), hsl(45 93% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 85% 60%), hsl(300 75% 65%));
+    --gradient-chat: linear-gradient(180deg, hsl(45 23% 97%), hsl(260 25% 98%));
+    --gradient-accent: linear-gradient(45deg, hsl(320 75% 65%), hsl(280 70% 70%));
 
     /* Playful shadows */
-    --shadow-gentle: 0 4px 20px -2px hsl(210 89% 52% / 0.1);
-    --shadow-chat: 0 2px 12px -2px hsl(230 25% 18% / 0.08);
-    --shadow-button: 0 4px 12px -2px hsl(210 89% 52% / 0.25);
+    --shadow-gentle: 0 4px 20px -2px hsl(270 85% 60% / 0.15);
+    --shadow-chat: 0 2px 12px -2px hsl(270 15% 25% / 0.08);
+    --shadow-button: 0 4px 12px -2px hsl(270 85% 60% / 0.3);
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 88%;
-    --input: 215 25% 92%;
-    --ring: 210 89% 52%;
+    --border: 260 20% 88%;
+    --input: 260 20% 92%;
+    --ring: 270 85% 60%;
 
     --radius: 1rem;
 
     /* Sidebar for future features */
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 230 25% 18%;
-    --sidebar-primary: 210 89% 52%;
+    --sidebar-foreground: 270 15% 25%;
+    --sidebar-primary: 270 85% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 95%;
-    --sidebar-accent-foreground: 230 25% 18%;
-    --sidebar-border: 215 25% 88%;
-    --sidebar-ring: 210 89% 52%;
+    --sidebar-accent: 260 20% 95%;
+    --sidebar-accent-foreground: 270 15% 25%;
+    --sidebar-border: 260 20% 88%;
+    --sidebar-ring: 270 85% 60%;
 
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    /* Dark mode - softer for kids' eyes */
-    --background: 230 23% 9%;
-    --foreground: 45 23% 95%;
+    /* Dark mode - magical purple theme */
+    --background: 270 25% 8%;
+    --foreground: 280 15% 92%;
 
-    --card: 230 20% 12%;
-    --card-foreground: 45 23% 95%;
+    --card: 270 20% 12%;
+    --card-foreground: 280 15% 92%;
 
-    --popover: 230 20% 12%;
-    --popover-foreground: 45 23% 95%;
+    --popover: 270 20% 12%;
+    --popover-foreground: 280 15% 92%;
 
-    --primary: 210 89% 65%;
-    --primary-foreground: 230 23% 9%;
-    --primary-glow: 210 89% 75%;
+    --primary: 270 80% 70%;
+    --primary-foreground: 270 25% 8%;
+    --primary-glow: 270 70% 80%;
 
-    --secondary: 142 60% 45%;
-    --secondary-foreground: 230 23% 9%;
+    --secondary: 180 55% 55%;
+    --secondary-foreground: 270 25% 8%;
 
-    --muted: 230 15% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 270 15% 18%;
+    --muted-foreground: 280 10% 65%;
 
-    --accent: 32 85% 65%;
-    --accent-foreground: 230 23% 9%;
+    --accent: 320 70% 70%;
+    --accent-foreground: 270 25% 8%;
 
-    --chat-user: 32 85% 65%;
-    --chat-user-foreground: 230 23% 9%;
-    --chat-bot: 230 20% 12%;
-    --chat-bot-foreground: 45 23% 95%;
+    --chat-user: 320 70% 70%;
+    --chat-user-foreground: 270 25% 8%;
+    --chat-bot: 270 20% 12%;
+    --chat-bot-foreground: 280 15% 92%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 89% 65%), hsl(185 74% 65%));
-    --gradient-chat: linear-gradient(180deg, hsl(230 23% 9%), hsl(230 20% 11%));
-    --gradient-accent: linear-gradient(45deg, hsl(32 85% 65%), hsl(45 83% 72%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 80% 70%), hsl(300 70% 75%));
+    --gradient-chat: linear-gradient(180deg, hsl(270 25% 8%), hsl(270 20% 10%));
+    --gradient-accent: linear-gradient(45deg, hsl(320 70% 70%), hsl(280 65% 75%));
 
-    --shadow-gentle: 0 4px 20px -2px hsl(210 89% 65% / 0.2);
-    --shadow-chat: 0 2px 12px -2px hsl(0 0% 0% / 0.3);
-    --shadow-button: 0 4px 12px -2px hsl(210 89% 65% / 0.4);
+    --shadow-gentle: 0 4px 20px -2px hsl(270 80% 70% / 0.3);
+    --shadow-chat: 0 2px 12px -2px hsl(0 0% 0% / 0.4);
+    --shadow-button: 0 4px 12px -2px hsl(270 80% 70% / 0.5);
 
-    --destructive: 0 74% 65%;
-    --destructive-foreground: 230 23% 9%;
+    --destructive: 0 70% 70%;
+    --destructive-foreground: 270 25% 8%;
 
-    --border: 230 15% 18%;
-    --input: 230 15% 18%;
-    --ring: 210 89% 65%;
+    --border: 270 15% 18%;
+    --input: 270 15% 18%;
+    --ring: 270 80% 70%;
 
-    --sidebar-background: 230 20% 8%;
-    --sidebar-foreground: 45 23% 95%;
-    --sidebar-primary: 210 89% 65%;
-    --sidebar-primary-foreground: 230 23% 9%;
-    --sidebar-accent: 230 15% 15%;
-    --sidebar-accent-foreground: 45 23% 95%;
-    --sidebar-border: 230 15% 18%;
-    --sidebar-ring: 210 89% 65%;
+    --sidebar-background: 270 20% 6%;
+    --sidebar-foreground: 280 15% 92%;
+    --sidebar-primary: 270 80% 70%;
+    --sidebar-primary-foreground: 270 25% 8%;
+    --sidebar-accent: 270 15% 15%;
+    --sidebar-accent-foreground: 280 15% 92%;
+    --sidebar-border: 270 15% 18%;
+    --sidebar-ring: 270 80% 70%;
   }
 }
 
