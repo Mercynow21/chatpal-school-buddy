@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -52,6 +53,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				chat: {
+					user: 'hsl(var(--chat-user))',
+					'user-foreground': 'hsl(var(--chat-user-foreground))',
+					bot: 'hsl(var(--chat-bot))',
+					'bot-foreground': 'hsl(var(--chat-bot-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -67,6 +74,16 @@ export default {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-chat': 'var(--gradient-chat)',
+				'gradient-accent': 'var(--gradient-accent)'
+			},
+			boxShadow: {
+				gentle: 'var(--shadow-gentle)',
+				chat: 'var(--shadow-chat)',
+				button: 'var(--shadow-button)'
 			},
 			keyframes: {
 				'accordion-down': {
