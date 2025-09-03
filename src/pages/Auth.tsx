@@ -60,8 +60,8 @@ const Auth = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-hero rounded-full mb-4 shadow-button">
             <Cross className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Christian Devotion</h1>
-          <p className="text-muted-foreground">Daily Bible verses and devotions in English & Amharic</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">GraceGuide</h1>
+          <p className="text-muted-foreground">Your warm Christian companion for Scripture, devotionals & faith encouragement</p>
         </div>
 
         <Tabs defaultValue="signin" className="w-full">
