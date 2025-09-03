@@ -90,118 +90,139 @@ const ChristianChatBot = () => {
     }
   };
 
-  const generateConversationalResponse = (userInput: string): { response: string; includeVerse: boolean } => {
+  const generateConversationalResponse = (userInput: string, previousMessages: Message[]): { response: string; includeVerse: boolean } => {
     const input = userInput.toLowerCase();
     
-    // Only include verses when explicitly requested or in very specific situations
+    // Check recent bot messages to avoid repetition
+    const recentBotMessages = previousMessages.slice(-4).filter(m => !m.isUser).map(m => m.content);
+    
+    // Only include verses when explicitly requested
     const verseKeywords = ['verse', 'scripture', 'bible', 'word of god', 'passage', 'show me', 'give me a verse'];
     const explicitVerseRequest = verseKeywords.some(keyword => input.includes(keyword));
     
-    // Generate deeply conversational responses
+    // Generate varied conversational responses
     if (language === 'english') {
       // Greeting responses
       if (input.includes('hello') || input.includes('hi') || input.includes('good morning') || input.includes('good evening')) {
+        const greetings = [
+          "Hello! It's great to connect with you today. What's on your heart?",
+          "Hi there! How has your day been treating you?",
+          "Good to see you! What brings you here today?",
+          "Hello! I'm glad you stopped by. How can I walk alongside you today?"
+        ];
         return {
-          response: "Hello there! It's wonderful to connect with you today. How has your day been going? I'm here to listen and walk alongside you in whatever you're experiencing.",
+          response: greetings[Math.floor(Math.random() * greetings.length)],
           includeVerse: false
         };
       }
       
-      // Prayer and spiritual questions
+      // Identity/purpose questions
+      if (input.includes('identity') || input.includes('who am i') || input.includes('purpose') || input.includes('calling')) {
+        const identityResponses = [
+          "Questions about identity and purpose are so important. You are deeply loved by God, created with intention and purpose. What's making you think about your identity today?",
+          "Identity in Christ is such a beautiful thing to explore. You are chosen, beloved, and have unique gifts to offer the world. What aspects of your identity are you wrestling with?",
+          "Your identity is rooted in being God's beloved child. That's your foundation, no matter what else is happening. What's prompting these thoughts about who you are?"
+        ];
+        return {
+          response: identityResponses[Math.floor(Math.random() * identityResponses.length)],
+          includeVerse: explicitVerseRequest
+        };
+      }
+      
+      // Prayer responses
       if (input.includes('pray') || input.includes('prayer')) {
+        const prayerResponses = [
+          "Prayer is such a gift. What would you like to pray about together?",
+          "I'd be honored to pray with you. What's weighing on your heart?",
+          "Let's talk to God together. What's on your mind?",
+          "Prayer changes things, including us. How can we pray today?"
+        ];
         return {
-          response: "I'm so glad you want to talk about prayer. It's one of the most beautiful ways we can connect with God. What's prompting you to think about prayer today? Are you looking for guidance on how to pray, or is there something specific weighing on your heart that you'd like to bring to God? I find that sometimes just talking through our thoughts can help us know how to pray about them.",
+          response: prayerResponses[Math.floor(Math.random() * prayerResponses.length)],
           includeVerse: explicitVerseRequest
         };
       }
       
-      // Emotional support - worry/anxiety
+      // Worry/anxiety responses
       if (input.includes('worry') || input.includes('anxious') || input.includes('stress') || input.includes('nervous')) {
+        const worryResponses = [
+          "Anxiety can feel so overwhelming. What's been causing you the most stress?",
+          "I hear the worry in your words. You don't have to carry this alone. What's troubling you?",
+          "Stress can be so heavy. What specific situation is weighing on you right now?",
+          "Those anxious thoughts can be exhausting. What's been keeping you up at night?"
+        ];
         return {
-          response: "I can hear that you're feeling worried, and I want you to know that you're not alone in this. Anxiety can feel so overwhelming sometimes, can't it? What's been causing you the most stress lately? Sometimes it helps to name our worries out loud - it can make them feel less intimidating. Have you found anything that helps you when you're feeling this way?",
+          response: worryResponses[Math.floor(Math.random() * worryResponses.length)],
           includeVerse: explicitVerseRequest
         };
       }
       
-      // Sadness and depression
-      if (input.includes('sad') || input.includes('depressed') || input.includes('down') || input.includes('hurt') || input.includes('pain')) {
+      // Sadness responses
+      if (input.includes('sad') || input.includes('depressed') || input.includes('down') || input.includes('hurt')) {
+        const sadnessResponses = [
+          "I'm sorry you're hurting. Your pain matters, and so do you. What's been difficult lately?",
+          "It sounds like you're going through a tough season. I'm here to listen. What's been hardest?",
+          "Those heavy feelings are real. You don't have to pretend to be okay. What's going on?",
+          "I can hear the sadness in what you're sharing. What's been breaking your heart lately?"
+        ];
         return {
-          response: "I'm really sorry you're going through a difficult time right now. Your pain is real and valid, and I want you to know that it's okay to not be okay sometimes. Would you feel comfortable sharing what's been weighing so heavily on your heart? Even if you don't want to go into details, sometimes just having someone acknowledge our pain can be a small comfort. How long have you been feeling this way?",
+          response: sadnessResponses[Math.floor(Math.random() * sadnessResponses.length)],
           includeVerse: explicitVerseRequest
         };
       }
       
-      // Gratitude and joy
-      if (input.includes('thank') || input.includes('grateful') || input.includes('blessing') || input.includes('happy') || input.includes('joy')) {
-        return {
-          response: "It's so beautiful to hear gratitude in your voice! There's something really special about taking time to recognize the good things in our lives, isn't there? What has been bringing you joy or gratitude lately? I'd love to celebrate these blessings with you. Sometimes sharing our gratitude with others multiplies the joy we feel.",
-          includeVerse: false
-        };
+      // Follow-up responses based on conversation flow
+      if (recentBotMessages.length > 0) {
+        const followUpResponses = [
+          "Tell me more about that.",
+          "How has that been affecting you?",
+          "What's that experience been like for you?",
+          "I'm listening. Go on.",
+          "That sounds significant. How are you processing that?",
+          "What's been the hardest part about this?",
+          "How long have you been dealing with this?",
+          "What support do you have around this situation?"
+        ];
+        
+        // Avoid recently used responses
+        const availableResponses = followUpResponses.filter(response => 
+          !recentBotMessages.some(msg => msg.includes(response))
+        );
+        
+        if (availableResponses.length > 0) {
+          return {
+            response: availableResponses[Math.floor(Math.random() * availableResponses.length)],
+            includeVerse: false
+          };
+        }
       }
       
-      // Forgiveness and guilt
-      if (input.includes('forgive') || input.includes('guilt') || input.includes('mistake') || input.includes('sin') || input.includes('wrong')) {
-        return {
-          response: "It takes courage to face our mistakes and seek forgiveness. I can sense this is weighing on you. Would you like to talk about what happened? Sometimes guilt can feel so heavy, but remember that God's heart toward you is always love and forgiveness when we come to Him honestly. Have you been able to forgive yourself, or is that part of what you're struggling with?",
-          includeVerse: explicitVerseRequest
-        };
-      }
+      // Default varied responses
+      const defaultResponses = [
+        "I'm here with you. What else is on your mind?",
+        "Thank you for trusting me with this. What would be helpful right now?",
+        "I appreciate you sharing that. How are you feeling about it all?",
+        "That's a lot to carry. What's been most challenging?",
+        "I'm glad you're here. What do you need most today?",
+        "Your thoughts and feelings matter. What else would you like to explore?"
+      ];
       
-      // Relationships and love
-      if (input.includes('relationship') || input.includes('family') || input.includes('friend') || input.includes('marriage') || input.includes('love')) {
-        return {
-          response: "Relationships are such a central part of our lives, aren't they? They can bring us our greatest joys and sometimes our deepest challenges too. What's happening in your relationships that you'd like to talk about? Whether you're celebrating something wonderful or working through difficulties, I'm here to listen and support you.",
-          includeVerse: false
-        };
-      }
-      
-      // Faith and spiritual growth
-      if (input.includes('faith') || input.includes('believe') || input.includes('god') || input.includes('jesus') || input.includes('christian')) {
-        return {
-          response: "I love that you're thinking about your faith journey. Our relationship with God is so personal and unique to each of us. What's been on your heart spiritually lately? Are you experiencing growth, questions, struggles, or maybe a mix of all three? There's no judgment here - wherever you are in your faith is exactly where God meets you.",
-          includeVerse: explicitVerseRequest
-        };
-      }
-      
-      // Work and purpose
-      if (input.includes('work') || input.includes('job') || input.includes('purpose') || input.includes('calling')) {
-        return {
-          response: "Work and finding our purpose can be such significant parts of our lives. How are things going for you in that area? Whether you're feeling fulfilled, frustrated, or somewhere in between, I'd love to hear what's on your mind. Sometimes talking through our work situations can help us see God's hand in our daily lives.",
-          includeVerse: false
-        };
-      }
-      
-      // Default conversational response - much more engaging
       return {
-        response: "Thank you for sharing with me. I'm really glad you're here and that we can talk together. What you've said is important, and I want to make sure I understand what you're going through. Can you tell me a bit more about what's been on your mind lately? I'm here to listen, support you, and walk with you through whatever you're experiencing.",
+        response: defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
         includeVerse: false
       };
     } else {
-      // Enhanced Amharic responses
-      if (input.includes('ሰላም') || input.includes('እንደምን') || input.includes('ጤና')) {
-        return {
-          response: "ሰላም ለእርስዎ! ዛሬ ከእርስዎ ጋር መገናኘቴ በጣም ደስ ይለኛል። ቀንዎ እንዴት እያለፈ ነው? በሚያጋጥመዎት ማንኛውም ሁኔታ ላይ ለመስማት እና ከእርስዎ ጎን ለመሆን እዚህ ነኝ።",
-          includeVerse: false
-        };
-      }
+      // Amharic varied responses
+      const amharicResponses = [
+        "እዚህ ከእርስዎ ጋር ነኝ። ሌላ ምን አለ በአእምሮዎ ላይ?",
+        "ይህን ስላካፈሉኝ አመሰግናለሁ። አሁን ምን ይረዳዎታል?",
+        "ያን ስላካፈሉኝ አድርጋለሁ። ስለ ሁሉም እንዴት ይሰማዎታል?",
+        "ለመሸከም ብዙ ነው። በጣም አስቸጋሪው ምን ነበር?",
+        "እዚህ መሆንዎ ደስ ይለኛል። ዛሬ በጣም የሚያስፈልግዎት ምንድን ነው?"
+      ];
       
-      if (input.includes('ጸሎት') || input.includes('እጸልያለሁ')) {
-        return {
-          response: "ስለ ጸሎት መነጋገር እንደሚፈልጉ በጣም ደስ ይለኛል። ከእግዚአብሔር ጋር ለመገናኘት ካሉት ወደዳጆች መንገዶች አንዱ ነው። ዛሬ ስለ ጸሎት እንዲያስቡ ያደረገዎት ምንድን ነው? እንዴት እንደሚጸልዩ መመሪያ ይፈልጋሉ፣ ወይስ ወደ እግዚአብሔር ልታመጡት የምትፈልጉ የተለየ ነገር አለ? አንዳንድ ጊዜ ሀሳባችንን መነጋገር እንዴት እንደምንጸልይላቸው እንድናውቅ ይረዳናል።",
-          includeVerse: explicitVerseRequest
-        };
-      }
-      
-      if (input.includes('ጭንቀት') || input.includes('ሰጋ') || input.includes('ውጥረት')) {
-        return {
-          response: "ጭንቀት እንዳለዎት እሰማለሁ፣ እና በዚህ ውስጥ ብቻዎ እንዳልሆኑ እንዲያውቁ እፈልጋለሁ። ጭንቀት አንዳንድ ጊዜ በጣም የሚያሸንፍ ሊሆን ይችላል፣ አይደል? በቅርቡ ስጋት የሚፈጥርልዎት ምንድን ነው? አንዳንድ ጊዜ ጭንቀታችንን በድምፅ መጥራት - ያን ያህል አስፈሪ እንዳይሆኑ ሊያደርግ ይችላል። ይህን ስሜት ሲሰማዎት የሚረዳዎት ነገር አግኝተው ያውቃሉ?",
-          includeVerse: explicitVerseRequest
-        };
-      }
-      
-      // Default Amharic response - more engaging
       return {
-        response: "ይህን ከእኔ ጋር ስላካፈሉ አመሰግናለሁ። እዚህ መሆንዎ እና አብረን መነጋገር መችላችን በጣም ደስ ይለኛል። ያለዎት ነገር ጠቃሚ ነው፣ እና እያጋጠመዎት ያለውን መረዳቴን ማረጋገጥ እፈልጋለሁ። በቅርቡ አእምሮዎን ላይ ያለውን የበለጠ ልንገሩኝ ይችላሉ? ለመስማት፣ ለመደገፍ እና በሚያጋጥመዎት ማንኛውም ነገር ከእርስዎ ጋር ለመሄድ እዚህ ነኝ።",
+        response: amharicResponses[Math.floor(Math.random() * amharicResponses.length)],
         includeVerse: false
       };
     }
@@ -225,7 +246,7 @@ const ChristianChatBot = () => {
 
     try {
       // Generate contextual response
-      const { response, includeVerse } = generateConversationalResponse(currentInput);
+      const { response, includeVerse } = generateConversationalResponse(currentInput, messages);
       
       let verseData = undefined;
       let finalResponse = response;
