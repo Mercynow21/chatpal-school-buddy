@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bible_verses: {
+        Row: {
+          amharic_devotion: string | null
+          amharic_text: string
+          created_at: string
+          english_devotion: string | null
+          english_text: string
+          id: string
+          theme: string | null
+          verse_reference: string
+        }
+        Insert: {
+          amharic_devotion?: string | null
+          amharic_text: string
+          created_at?: string
+          english_devotion?: string | null
+          english_text: string
+          id?: string
+          theme?: string | null
+          verse_reference: string
+        }
+        Update: {
+          amharic_devotion?: string | null
+          amharic_text?: string
+          created_at?: string
+          english_devotion?: string | null
+          english_text?: string
+          id?: string
+          theme?: string | null
+          verse_reference?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email_verified: boolean | null
+          id: string
+          phone_number: string | null
+          phone_verified: boolean | null
+          preferred_language: string | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_verified?: boolean | null
+          id?: string
+          phone_number?: string | null
+          phone_verified?: boolean | null
+          preferred_language?: string | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_verified?: boolean | null
+          id?: string
+          phone_number?: string | null
+          phone_verified?: boolean | null
+          preferred_language?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string | null
+          subscribed: boolean
+          subscription_end: string | null
+          subscription_tier: string | null
+          trial_end: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      verification_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          type: string
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          type: string
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          type?: string
+          user_id?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
