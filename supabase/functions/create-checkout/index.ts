@@ -13,19 +13,35 @@ serve(async (req) => {
   }
 
   try {
-    console.log("[CREATE-CHECKOUT] Function started v2");
+    console.log("[CREATE-CHECKOUT] Starting checkout function - v3");
     
-    // List all available environment variables for debugging
-    console.log("[CREATE-CHECKOUT] Available env vars:", Object.keys(Deno.env.toObject()));
+    // Debug environment variables
+    const allEnvVars = Deno.env.toObject();
+    const envKeys = Object.keys(allEnvVars);
+    console.log("[CREATE-CHECKOUT] Total env vars:", envKeys.length);
+    console.log("[CREATE-CHECKOUT] Env keys containing 'STRIPE':", envKeys.filter(k => k.includes('STRIPE')));
     
-    // Check if Stripe secret key is available
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    console.log("[CREATE-CHECKOUT] Stripe key available:", !!stripeKey);
-    console.log("[CREATE-CHECKOUT] Stripe key length:", stripeKey?.length || 0);
+    console.log("[CREATE-CHECKOUT] STRIPE_SECRET_KEY exists:", !!stripeKey);
+    console.log("[CREATE-CHECKOUT] STRIPE_SECRET_KEY length:", stripeKey?.length || 0);
+    console.log("[CREATE-CHECKOUT] STRIPE_SECRET_KEY starts with sk_:", stripeKey?.startsWith('sk_') || false);
     
-    if (!stripeKey || stripeKey.trim() === "") {
-      console.error("[CREATE-CHECKOUT] STRIPE_SECRET_KEY is missing or empty");
-      throw new Error("STRIPE_SECRET_KEY environment variable is not set or is empty");
+    if (!stripeKey || !stripeKey.startsWith('sk_')) {
+      console.error("[CREATE-CHECKOUT] Invalid or missing Stripe key");
+      return new Response(
+        JSON.stringify({ 
+          error: "Stripe configuration error. Please check your secret key setup.",
+          debug: {
+            hasKey: !!stripeKey,
+            keyLength: stripeKey?.length || 0,
+            validFormat: stripeKey?.startsWith('sk_') || false
+          }
+        }), 
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 500,
+        }
+      );
     }
 
     const supabaseClient = createClient(
@@ -33,24 +49,43 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header provided");
+    }
+
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError) {
+      console.error("[CREATE-CHECKOUT] Auth error:", authError);
+      throw new Error("Authentication failed");
+    }
+
     const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (!user?.email) {
+      throw new Error("User not authenticated or email not available");
+    }
     
     console.log("[CREATE-CHECKOUT] User authenticated:", user.email);
 
+    console.log("[CREATE-CHECKOUT] Initializing Stripe with key length:", stripeKey.length);
     const stripe = new Stripe(stripeKey, { 
       apiVersion: "2023-10-16" 
     });
 
+    console.log("[CREATE-CHECKOUT] Looking up customer for:", user.email);
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("[CREATE-CHECKOUT] Found existing customer:", customerId);
+    } else {
+      console.log("[CREATE-CHECKOUT] No existing customer found");
     }
 
+    console.log("[CREATE-CHECKOUT] Creating checkout session");
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -70,12 +105,17 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/`,
     });
 
+    console.log("[CREATE-CHECKOUT] Session created successfully:", session.id);
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("[CREATE-CHECKOUT] Error:", error);
+    return new Response(JSON.stringify({ 
+      error: error.message || "An unexpected error occurred",
+      details: error.toString()
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
