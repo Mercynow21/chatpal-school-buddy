@@ -18,6 +18,7 @@ interface Message {
     text: string;
     devotion: string;
   };
+  topic?: string; // Track conversation topics
 }
 
 interface BibleVerse {
@@ -36,20 +37,23 @@ const ChristianChatBot = () => {
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<'english' | 'amharic'>(profile?.preferred_language || 'english');
+  const [usedVerses, setUsedVerses] = useState<string[]>([]);  // Track used verses
+  const [conversationTopics, setConversationTopics] = useState<string[]>([]);  // Track conversation topics
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize with GraceGuide welcome message
+    // Initialize with GraceGuide welcome message with personal greeting
+    const userName = profile?.username || 'beloved friend';
     const welcomeMessage: Message = {
       id: '1',
       content: language === 'english' 
-        ? "Hello, beloved friend! I'm GraceGuide, your warm Christian companion here to help you grow in faith with Scripture, devotionals, and encouragement. Think of me as that caring friend from your Bible study group — ready to walk alongside you in God's Word.\n\nWhat's on your heart today?"
-        : "ሰላም፣ ውድ ወዳጅ! እኔ ግሬስጋይድ ነኝ፣ በስክሪፕቸር፣ በወንድምማሪና በመበረታት እምነትዎን እንዲያድጉ የሚረዳ ሞቃታማ የክርስቲያን አጋርዎ። እንደ ከመጽሐፍ ቅዱስ ጥናት ቡድንዎ የተስተዋለ ወዳጅ አድርገው ያስቡኝ — በእግዚአብሔር ቃል ከእርስዎ ጋር ለመራመድ ዝግጁ።\n\nዛሬ በልብዎ ላይ ያለው ምንድን ነው?",
+        ? `Hello, ${userName}! I'm GraceGuide, your warm Christian companion here to help you grow in faith with Scripture, devotionals, and encouragement. Think of me as that caring friend from your Bible study group — ready to walk alongside you in God's Word.\n\nWhat's on your heart today?`
+        : `ሰላም፣ ${userName}! እኔ ግሬስጋይድ ነኝ፣ በስክሪፕቸር፣ በወንድምማሪና በመበረታት እምነትዎን እንዲያድጉ የሚረዳ ሞቃታማ የክርስቲያን አጋርዎ። እንደ ከመጽሐፍ ቅዱስ ጥናት ቡድንዎ የተስተዋለ ወዳጅ አድርገው ያስቡኝ — በእግዚአብሔር ቃል ከእርስዎ ጋር ለመራመድ ዝግጁ።\n\nዛሬ በልብዎ ላይ ያለው ምንድን ነው?`,
       isUser: false,
       timestamp: new Date(),
     };
     setMessages([welcomeMessage]);
-  }, [language]);
+  }, [language, profile?.username]);
 
   useEffect(() => {
     // Auto-scroll to bottom when new messages are added
@@ -70,7 +74,7 @@ const ChristianChatBot = () => {
     }
   };
 
-  const getRandomVerse = async (): Promise<BibleVerse | null> => {
+  const getRandomVerse = async (excludeUsed: boolean = true): Promise<BibleVerse | null> => {
     try {
       const { data, error } = await supabase
         .from('bible_verses')
@@ -82,22 +86,57 @@ const ChristianChatBot = () => {
         return null;
       }
 
-      const randomIndex = Math.floor(Math.random() * data.length);
-      return data[randomIndex];
+      // Filter out used verses if requested
+      let availableVerses = data;
+      if (excludeUsed && usedVerses.length > 0) {
+        availableVerses = data.filter(verse => !usedVerses.includes(verse.verse_reference));
+        // If we've used all verses, reset and use all verses again
+        if (availableVerses.length === 0) {
+          availableVerses = data;
+          setUsedVerses([]);
+        }
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableVerses.length);
+      const selectedVerse = availableVerses[randomIndex];
+      
+      // Track this verse as used
+      if (excludeUsed) {
+        setUsedVerses(prev => [...prev, selectedVerse.verse_reference]);
+      }
+      
+      return selectedVerse;
     } catch (error) {
       console.error('Error:', error);
       return null;
     }
   };
 
-  const generateGraceGuideResponse = async (userInput: string, previousMessages: Message[]): Promise<{ response: string; includeVerse: boolean; devotion?: any; studyPlan?: any }> => {
+  const generateGraceGuideResponse = async (userInput: string, previousMessages: Message[]): Promise<{ response: string; includeVerse: boolean; devotion?: any; studyPlan?: any; topic?: string }> => {
     const input = userInput.toLowerCase();
+    const userName = profile?.username || 'beloved friend';
+    
+    // Check for repeated topics to provide different responses
+    const hasDiscussedIdentity = previousMessages.some(m => m.topic === 'identity');
+    const hasDiscussedPrayer = previousMessages.some(m => m.topic === 'prayer');
+    const hasDiscussedWorry = previousMessages.some(m => m.topic === 'worry');
+    const hasDiscussedSadness = previousMessages.some(m => m.topic === 'sadness');
+    
+    // Generate conversation summary if appropriate
+    const shouldSummarize = previousMessages.length > 6 && Math.random() < 0.3;
+    let conversationContext = '';
+    if (shouldSummarize) {
+      const topics = conversationTopics.slice(-3);
+      if (topics.length >= 2) {
+        conversationContext = `You know, ${userName}, earlier we talked about ${topics[0]}, and now we're exploring ${topics[topics.length - 1]}. I love how our conversation is flowing! `;
+      }
+    }
     
     if (language === 'english') {
       // Account setup requests
       if (input.includes('account') || input.includes('sign up') || input.includes('create account') || input.includes('register')) {
         return {
-          response: "Welcome, beloved friend! Let's set up your account step by step:\n\n1. Choose a username\n2. Choose a password to keep your account safe\n3. Enter your email so we can send you a confirmation link\n\nEnjoy 7 days of free devotionals and study plans. After that, you can subscribe to unlock unlimited content — your support helps us reach more people with God's Word.\n\nWhat username would you like to use?",
+          response: `Welcome, ${userName}! Let's set up your account step by step:\n\n1. Choose a username\n2. Choose a password to keep your account safe\n3. Enter your email so we can send you a confirmation link\n\nEnjoy 7 days of free devotionals and study plans. After that, you can subscribe to unlock unlimited content — your support helps us reach more people with God's Word.\n\nWhat username would you like to use?`,
           includeVerse: false
         };
       }
@@ -105,18 +144,69 @@ const ChristianChatBot = () => {
       // Trial/subscription questions
       if (input.includes('trial') || input.includes('subscribe') || input.includes('subscription') || input.includes('keep using')) {
         return {
-          response: "Wonderful! After your 7-day trial, you can subscribe to continue your journey in God's Word.\n\nYour subscription helps share Scripture and devotionals with others around the world — think of it as partnering with us to spread God's love!\n\nWould you like me to guide you through the subscription process now?",
+          response: `Wonderful, ${userName}! After your 7-day trial, you can subscribe to continue your journey in God's Word.\n\nYour subscription helps share Scripture and devotionals with others around the world — think of it as partnering with us to spread God's love!\n\nWould you like me to guide you through the subscription process now?`,
           includeVerse: false
         };
       }
 
-      // Identity questions - following the examples provided
+      // Identity questions - rotate responses for repeated questions
       if (input.includes('identity') || input.includes('who am i') || input.includes('my identity')) {
-        const verse = await getRandomVerse();
-        const response = "In Christ, you are God's beloved child — forgiven, chosen, and made new.\n\n**2 Corinthians 5:17 (NIV):** \"Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!\"\n\nGod doesn't just fix the old; He makes us completely new. Your past no longer defines you — His love does.\n\nWould you like me to share a devotion or give you a study plan on this topic?";
+        let response = '';
+        if (!hasDiscussedIdentity) {
+          response = `${conversationContext}In Christ, you are God's beloved child — forgiven, chosen, and made new.\n\n**John 1:12 (NIV):** "Yet to all who did receive him, to those who believed in his name, he gave the right to become children of God."\n\nWould you like me to share a devotion or give you a study plan on this topic?`;
+        } else {
+          // Different perspective for repeated question
+          response = `${conversationContext}Another perspective on your identity, ${userName}: You are a new creation in Christ.\n\n**2 Corinthians 5:17 (ESV):** "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!"\n\nYour past mistakes don't define your future in Him. Would you like me to share a different verse or a reflection for today?`;
+        }
         return {
           response,
-          includeVerse: true
+          includeVerse: true,
+          topic: 'identity'
+        };
+      }
+
+      // Prayer requests - rotate responses
+      if (input.includes('pray') || input.includes('prayer')) {
+        let response = '';
+        if (!hasDiscussedPrayer) {
+          response = `${conversationContext}Prayer is one of the most beautiful gifts God has given us — a direct line to the heart of our Father.\n\n**1 Thessalonians 5:17 (ESV):** "Pray without ceasing."\n\nGod delights in hearing from you, whether it's thanksgiving, requests, or just sharing your heart with Him.\n\nWhat would you like to pray about together today?`;
+        } else {
+          response = `${conversationContext}I love that you're thinking about prayer again, ${userName}! Here's another truth about prayer:\n\n**Matthew 7:7 (NIV):** "Ask and it will be given to you; seek and you will find; knock and the door will be opened to you."\n\nGod is always listening, always ready to respond to your heart. How has prayer been feeling for you lately?`;
+        }
+        return {
+          response,
+          includeVerse: true,
+          topic: 'prayer'
+        };
+      }
+
+      // Worry/anxiety - rotate responses
+      if (input.includes('worry') || input.includes('anxious') || input.includes('anxiety') || input.includes('stress')) {
+        let response = '';
+        if (!hasDiscussedWorry) {
+          response = `${conversationContext}I hear the weight you're carrying, ${userName}. Anxiety can feel overwhelming, but God wants to carry those burdens with you.\n\n**Philippians 4:6-7 (NIV):** "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."\n\nYou don't have to face this alone — God is right there with you.\n\nWhat specific worry is weighing heaviest on your heart right now?`;
+        } else {
+          response = `${conversationContext}I see you're still wrestling with worry, ${userName}. Here's another promise to hold onto:\n\n**1 Peter 5:7 (ESV):** "Casting all your anxieties on him, because he cares for you."\n\nGod doesn't just want to help with your worries — He wants to carry them completely. What's been the hardest part about letting go of control?`;
+        }
+        return {
+          response,
+          includeVerse: true,
+          topic: 'worry'
+        };
+      }
+
+      // Sadness/depression - rotate responses
+      if (input.includes('sad') || input.includes('depressed') || input.includes('hurt') || input.includes('down')) {
+        let response = '';
+        if (!hasDiscussedSadness) {
+          response = `${conversationContext}I'm so sorry you're hurting, ${userName}. Your pain is real and it matters to God — He sees every tear.\n\n**Psalm 34:18 (ESV):** "The Lord is near to the brokenhearted and saves the crushed in spirit."\n\nGod doesn't promise to take away all pain immediately, but He promises to be near to you in it. You are not alone in this darkness.\n\nWhat's been the hardest part of what you're going through?`;
+        } else {
+          response = `${conversationContext}My heart goes out to you again, ${userName}. Here's another truth to lean on:\n\n**Psalm 147:3 (NIV):** "He heals the brokenhearted and binds up their wounds."\n\nHealing often comes slowly, but it comes. God is working even when you can't see it. How are you caring for yourself during this difficult time?`;
+        }
+        return {
+          response,
+          includeVerse: true,
+          topic: 'sadness'
         };
       }
 
@@ -124,63 +214,35 @@ const ChristianChatBot = () => {
       if (input.includes('devotion') || input.includes('give me a devotion')) {
         const verse = await getRandomVerse();
         if (verse) {
-          const devotionResponse = `**Theme:** New Creation in Christ\n\n**Scripture:** ${verse.verse_reference}\n"${verse.english_text}"\n\n**Reflection:** ${verse.english_devotion}\n\n*"The old has gone, the new is here!" (2 Corinthians 5:17)*\n\nWould you like a 3-day study plan to go deeper into this topic?`;
+          const devotionResponse = `${conversationContext}**Theme:** ${verse.theme || "God's Love"}\n\n**Scripture:** ${verse.verse_reference}\n"${verse.english_text}"\n\n**Reflection:** ${verse.english_devotion}\n\nWould you like a 3-day study plan to go deeper into this topic, ${userName}?`;
           return {
             response: devotionResponse,
             includeVerse: true,
             devotion: {
-              theme: "New Creation in Christ",
+              theme: verse.theme || "God's Love",
               verse: verse.verse_reference,
               text: verse.english_text,
               reflection: verse.english_devotion
-            }
+            },
+            topic: 'devotion'
           };
         }
       }
 
       // Study plan requests
       if (input.includes('study plan') || input.includes('study') || input.includes('deeper')) {
-        const studyPlanResponse = "Here are three options to grow deeper in God's Word:\n\n**1. Identity in Christ** — Discover who you are as God's beloved child\n**2. Prayer and Presence** — Learn how to talk to God daily  \n**3. Living with Forgiveness** — Experience freedom from guilt and bitterness\n\nWhich one would you like to start with?";
+        const studyPlanResponse = `${conversationContext}Here are three options to grow deeper in God's Word, ${userName}:\n\n**1. Identity in Christ** — Who you are in God's eyes\n**2. Prayer and Presence** — Learning to talk with God daily\n**3. Living with Forgiveness** — Freedom from guilt and bitterness\n\nWhich one sounds good to you?`;
         return {
           response: studyPlanResponse,
           includeVerse: false,
           studyPlan: {
             options: [
-              "Identity in Christ — Discover who you are as God's beloved child",
-              "Prayer and Presence — Learn how to talk to God daily",
-              "Living with Forgiveness — Experience freedom from guilt and bitterness"
+              "Identity in Christ — Who you are in God's eyes",
+              "Prayer and Presence — Learning to talk with God daily",
+              "Living with Forgiveness — Freedom from guilt and bitterness"
             ]
-          }
-        };
-      }
-
-      // Prayer requests
-      if (input.includes('pray') || input.includes('prayer')) {
-        const verse = await getRandomVerse();
-        const response = "Prayer is one of the most beautiful gifts God has given us — a direct line to the heart of our Father.\n\n**1 Thessalonians 5:17 (ESV):** \"Pray without ceasing.\"\n\nGod delights in hearing from you, whether it's thanksgiving, requests, or just sharing your heart with Him.\n\nWhat would you like to pray about together today?";
-        return {
-          response,
-          includeVerse: true
-        };
-      }
-
-      // Worry/anxiety
-      if (input.includes('worry') || input.includes('anxious') || input.includes('anxiety') || input.includes('stress')) {
-        const verse = await getRandomVerse();
-        const response = "I hear the weight you're carrying, beloved. Anxiety can feel overwhelming, but God wants to carry those burdens with you.\n\n**Philippians 4:6-7 (NIV):** \"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.\"\n\nYou don't have to face this alone — God is right there with you.\n\nWhat specific worry is weighing heaviest on your heart right now?";
-        return {
-          response,
-          includeVerse: true
-        };
-      }
-
-      // Sadness/depression
-      if (input.includes('sad') || input.includes('depressed') || input.includes('hurt') || input.includes('down')) {
-        const verse = await getRandomVerse();
-        const response = "I'm so sorry you're hurting, friend. Your pain is real and it matters to God — He sees every tear.\n\n**Psalm 34:18 (ESV):** \"The Lord is near to the brokenhearted and saves the crushed in spirit.\"\n\nGod doesn't promise to take away all pain immediately, but He promises to be near to you in it. You are not alone in this darkness.\n\nWhat's been the hardest part of what you're going through?";
-        return {
-          response,
-          includeVerse: true
+          },
+          topic: 'study'
         };
       }
 
@@ -188,25 +250,29 @@ const ChristianChatBot = () => {
       if (input.includes('faith') || input.includes('believe') || input.includes('god') || input.includes('jesus')) {
         const verse = await getRandomVerse();
         if (verse) {
-          const response = `Faith questions are so beautiful — they show a heart that's seeking truth.\n\n**${verse.verse_reference}:** "${verse.english_text}"\n\n${verse.english_devotion}\n\nWhat aspects of faith are you curious about or struggling with?`;
+          const response = `${conversationContext}Faith questions are so beautiful, ${userName} — they show a heart that's seeking truth.\n\n**${verse.verse_reference}:** "${verse.english_text}"\n\n${verse.english_devotion}\n\nWhat aspects of faith are you curious about or struggling with?`;
           return {
             response,
-            includeVerse: true
+            includeVerse: true,
+            topic: 'faith'
           };
         }
       }
 
       // Default response with follow-up question
-      const verse = await getRandomVerse();
-      const defaultResponse = "Thank you for sharing that with me, beloved. I'm here to walk alongside you in whatever you're experiencing.\n\nWhat would be most helpful for you right now — a word of encouragement, prayer, or maybe diving into Scripture together?";
+      const defaultResponses = [
+        `Thank you for sharing that with me, ${userName}. I'm here to walk alongside you in whatever you're experiencing.\n\nWhat would be most helpful for you right now — a word of encouragement, prayer, or maybe diving into Scripture together?`,
+        `I appreciate you opening up, ${userName}. Your thoughts and feelings matter deeply.\n\nHow can I best support you today — through prayer, a Bible verse, or just listening?`,
+        `${userName}, I'm grateful you trust me with what's on your heart.\n\nWould you like to explore this more through Scripture, or is there something else you'd like to talk about?`
+      ];
       return {
-        response: defaultResponse,
+        response: conversationContext + defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
         includeVerse: false
       };
     } else {
       // Amharic responses - simplified for now
       return {
-        response: "እዚህ ከእርስዎ ጋር ነኝ፣ ውድ ወዳጅ። ዛሬ እንዴት ልረዳዎት እችላለሁ?",
+        response: `እዚህ ከእርስዎ ጋር ነኝ፣ ${userName}። ዛሬ እንዴት ልረዳዎት እችላለሁ?`,
         includeVerse: false
       };
     }
@@ -230,7 +296,12 @@ const ChristianChatBot = () => {
 
     try {
       // Generate GraceGuide response
-      const { response, includeVerse } = await generateGraceGuideResponse(currentInput, messages);
+      const { response, includeVerse, topic } = await generateGraceGuideResponse(currentInput, messages);
+      
+      // Track conversation topics
+      if (topic) {
+        setConversationTopics(prev => [...prev, topic].slice(-5)); // Keep last 5 topics
+      }
       
       let verseData = undefined;
       let finalResponse = response;
@@ -263,6 +334,7 @@ const ChristianChatBot = () => {
         isUser: false,
         timestamp: new Date(),
         verse: verseData,
+        topic: topic,
       };
 
       setMessages(prev => [...prev, botMessage]);
