@@ -34,7 +34,7 @@ const Index = () => {
               <Cross className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-lg">Christian Devotion</h1>
+              <h1 className="font-bold text-lg">GraceGuide</h1>
               <p className="text-sm text-muted-foreground">
                 Welcome, {profile?.username || user.email}
               </p>
