@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, Globe, BookOpen, Heart, Loader2 } from 'lucide-react';
+import { Send, Globe, BookOpen, Heart, Loader2, Star, Users } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -39,12 +39,12 @@ const ChristianChatBot = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize with welcome message
+    // Initialize with GraceGuide welcome message
     const welcomeMessage: Message = {
       id: '1',
       content: language === 'english' 
-      ? "Welcome! I'm your Christian devotion companion. I can share Bible verses, devotions, and spiritual guidance in English and Amharic. How can I encourage you today?"
-      : "እንኳን ደህና መጡ! እኔ የእርስዎ የክርስትና ወንድምማሪ አጋር ነኝ። በእንግሊዝኛና በአማርኛ የመጽሐፍ ቅዱስ ጥቅሶች፣ ወንድምማሪና መንፈሳዊ መምሪያ ልካፍልዎ እችላለሁ። ዛሬ እንዴት ልበረታዎት እችላለሁ?",
+        ? "Hello, beloved friend! I'm GraceGuide, your warm Christian companion here to help you grow in faith with Scripture, devotionals, and encouragement. Think of me as that caring friend from your Bible study group — ready to walk alongside you in God's Word.\n\nWhat's on your heart today?"
+        : "ሰላም፣ ውድ ወዳጅ! እኔ ግሬስጋይድ ነኝ፣ በስክሪፕቸር፣ በወንድምማሪና በመበረታት እምነትዎን እንዲያድጉ የሚረዳ ሞቃታማ የክርስቲያን አጋርዎ። እንደ ከመጽሐፍ ቅዱስ ጥናት ቡድንዎ የተስተዋለ ወዳጅ አድርገው ያስቡኝ — በእግዚአብሔር ቃል ከእርስዎ ጋር ለመራመድ ዝግጁ።\n\nዛሬ በልብዎ ላይ ያለው ምንድን ነው?",
       isUser: false,
       timestamp: new Date(),
     };
@@ -90,139 +90,123 @@ const ChristianChatBot = () => {
     }
   };
 
-  const generateConversationalResponse = (userInput: string, previousMessages: Message[]): { response: string; includeVerse: boolean } => {
+  const generateGraceGuideResponse = async (userInput: string, previousMessages: Message[]): Promise<{ response: string; includeVerse: boolean; devotion?: any; studyPlan?: any }> => {
     const input = userInput.toLowerCase();
     
-    // Check recent bot messages to avoid repetition
-    const recentBotMessages = previousMessages.slice(-4).filter(m => !m.isUser).map(m => m.content);
-    
-    // Only include verses when explicitly requested
-    const verseKeywords = ['verse', 'scripture', 'bible', 'word of god', 'passage', 'show me', 'give me a verse'];
-    const explicitVerseRequest = verseKeywords.some(keyword => input.includes(keyword));
-    
-    // Generate varied conversational responses
     if (language === 'english') {
-      // Greeting responses
-      if (input.includes('hello') || input.includes('hi') || input.includes('good morning') || input.includes('good evening')) {
-        const greetings = [
-          "Hello! It's great to connect with you today. What's on your heart?",
-          "Hi there! How has your day been treating you?",
-          "Good to see you! What brings you here today?",
-          "Hello! I'm glad you stopped by. How can I walk alongside you today?"
-        ];
+      // Account setup requests
+      if (input.includes('account') || input.includes('sign up') || input.includes('create account') || input.includes('register')) {
         return {
-          response: greetings[Math.floor(Math.random() * greetings.length)],
+          response: "Welcome, beloved friend! Let's set up your account step by step:\n\n1. Choose a username\n2. Choose a password to keep your account safe\n3. Enter your email so we can send you a confirmation link\n\nEnjoy 7 days of free devotionals and study plans. After that, you can subscribe to unlock unlimited content — your support helps us reach more people with God's Word.\n\nWhat username would you like to use?",
           includeVerse: false
         };
       }
-      
-      // Identity/purpose questions
-      if (input.includes('identity') || input.includes('who am i') || input.includes('purpose') || input.includes('calling')) {
-        const identityResponses = [
-          "Questions about identity and purpose are so important. You are deeply loved by God, created with intention and purpose. What's making you think about your identity today?",
-          "Identity in Christ is such a beautiful thing to explore. You are chosen, beloved, and have unique gifts to offer the world. What aspects of your identity are you wrestling with?",
-          "Your identity is rooted in being God's beloved child. That's your foundation, no matter what else is happening. What's prompting these thoughts about who you are?"
-        ];
+
+      // Trial/subscription questions
+      if (input.includes('trial') || input.includes('subscribe') || input.includes('subscription') || input.includes('keep using')) {
         return {
-          response: identityResponses[Math.floor(Math.random() * identityResponses.length)],
-          includeVerse: explicitVerseRequest
+          response: "Wonderful! After your 7-day trial, you can subscribe to continue your journey in God's Word.\n\nYour subscription helps share Scripture and devotionals with others around the world — think of it as partnering with us to spread God's love!\n\nWould you like me to guide you through the subscription process now?",
+          includeVerse: false
         };
       }
-      
-      // Prayer responses
-      if (input.includes('pray') || input.includes('prayer')) {
-        const prayerResponses = [
-          "Prayer is such a gift. What would you like to pray about together?",
-          "I'd be honored to pray with you. What's weighing on your heart?",
-          "Let's talk to God together. What's on your mind?",
-          "Prayer changes things, including us. How can we pray today?"
-        ];
+
+      // Identity questions - following the examples provided
+      if (input.includes('identity') || input.includes('who am i') || input.includes('my identity')) {
+        const verse = await getRandomVerse();
+        const response = "In Christ, you are God's beloved child — forgiven, chosen, and made new.\n\n**2 Corinthians 5:17 (NIV):** \"Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!\"\n\nGod doesn't just fix the old; He makes us completely new. Your past no longer defines you — His love does.\n\nWould you like me to share a devotion or give you a study plan on this topic?";
         return {
-          response: prayerResponses[Math.floor(Math.random() * prayerResponses.length)],
-          includeVerse: explicitVerseRequest
+          response,
+          includeVerse: true
         };
       }
-      
-      // Worry/anxiety responses
-      if (input.includes('worry') || input.includes('anxious') || input.includes('stress') || input.includes('nervous')) {
-        const worryResponses = [
-          "Anxiety can feel so overwhelming. What's been causing you the most stress?",
-          "I hear the worry in your words. You don't have to carry this alone. What's troubling you?",
-          "Stress can be so heavy. What specific situation is weighing on you right now?",
-          "Those anxious thoughts can be exhausting. What's been keeping you up at night?"
-        ];
-        return {
-          response: worryResponses[Math.floor(Math.random() * worryResponses.length)],
-          includeVerse: explicitVerseRequest
-        };
-      }
-      
-      // Sadness responses
-      if (input.includes('sad') || input.includes('depressed') || input.includes('down') || input.includes('hurt')) {
-        const sadnessResponses = [
-          "I'm sorry you're hurting. Your pain matters, and so do you. What's been difficult lately?",
-          "It sounds like you're going through a tough season. I'm here to listen. What's been hardest?",
-          "Those heavy feelings are real. You don't have to pretend to be okay. What's going on?",
-          "I can hear the sadness in what you're sharing. What's been breaking your heart lately?"
-        ];
-        return {
-          response: sadnessResponses[Math.floor(Math.random() * sadnessResponses.length)],
-          includeVerse: explicitVerseRequest
-        };
-      }
-      
-      // Follow-up responses based on conversation flow
-      if (recentBotMessages.length > 0) {
-        const followUpResponses = [
-          "Tell me more about that.",
-          "How has that been affecting you?",
-          "What's that experience been like for you?",
-          "I'm listening. Go on.",
-          "That sounds significant. How are you processing that?",
-          "What's been the hardest part about this?",
-          "How long have you been dealing with this?",
-          "What support do you have around this situation?"
-        ];
-        
-        // Avoid recently used responses
-        const availableResponses = followUpResponses.filter(response => 
-          !recentBotMessages.some(msg => msg.includes(response))
-        );
-        
-        if (availableResponses.length > 0) {
+
+      // Devotion requests
+      if (input.includes('devotion') || input.includes('give me a devotion')) {
+        const verse = await getRandomVerse();
+        if (verse) {
+          const devotionResponse = `**Theme:** New Creation in Christ\n\n**Scripture:** ${verse.verse_reference}\n"${verse.english_text}"\n\n**Reflection:** ${verse.english_devotion}\n\n*"The old has gone, the new is here!" (2 Corinthians 5:17)*\n\nWould you like a 3-day study plan to go deeper into this topic?`;
           return {
-            response: availableResponses[Math.floor(Math.random() * availableResponses.length)],
-            includeVerse: false
+            response: devotionResponse,
+            includeVerse: true,
+            devotion: {
+              theme: "New Creation in Christ",
+              verse: verse.verse_reference,
+              text: verse.english_text,
+              reflection: verse.english_devotion
+            }
           };
         }
       }
-      
-      // Default varied responses
-      const defaultResponses = [
-        "I'm here with you. What else is on your mind?",
-        "Thank you for trusting me with this. What would be helpful right now?",
-        "I appreciate you sharing that. How are you feeling about it all?",
-        "That's a lot to carry. What's been most challenging?",
-        "I'm glad you're here. What do you need most today?",
-        "Your thoughts and feelings matter. What else would you like to explore?"
-      ];
-      
+
+      // Study plan requests
+      if (input.includes('study plan') || input.includes('study') || input.includes('deeper')) {
+        const studyPlanResponse = "Here are three options to grow deeper in God's Word:\n\n**1. Identity in Christ** — Discover who you are as God's beloved child\n**2. Prayer and Presence** — Learn how to talk to God daily  \n**3. Living with Forgiveness** — Experience freedom from guilt and bitterness\n\nWhich one would you like to start with?";
+        return {
+          response: studyPlanResponse,
+          includeVerse: false,
+          studyPlan: {
+            options: [
+              "Identity in Christ — Discover who you are as God's beloved child",
+              "Prayer and Presence — Learn how to talk to God daily",
+              "Living with Forgiveness — Experience freedom from guilt and bitterness"
+            ]
+          }
+        };
+      }
+
+      // Prayer requests
+      if (input.includes('pray') || input.includes('prayer')) {
+        const verse = await getRandomVerse();
+        const response = "Prayer is one of the most beautiful gifts God has given us — a direct line to the heart of our Father.\n\n**1 Thessalonians 5:17 (ESV):** \"Pray without ceasing.\"\n\nGod delights in hearing from you, whether it's thanksgiving, requests, or just sharing your heart with Him.\n\nWhat would you like to pray about together today?";
+        return {
+          response,
+          includeVerse: true
+        };
+      }
+
+      // Worry/anxiety
+      if (input.includes('worry') || input.includes('anxious') || input.includes('anxiety') || input.includes('stress')) {
+        const verse = await getRandomVerse();
+        const response = "I hear the weight you're carrying, beloved. Anxiety can feel overwhelming, but God wants to carry those burdens with you.\n\n**Philippians 4:6-7 (NIV):** \"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.\"\n\nYou don't have to face this alone — God is right there with you.\n\nWhat specific worry is weighing heaviest on your heart right now?";
+        return {
+          response,
+          includeVerse: true
+        };
+      }
+
+      // Sadness/depression
+      if (input.includes('sad') || input.includes('depressed') || input.includes('hurt') || input.includes('down')) {
+        const verse = await getRandomVerse();
+        const response = "I'm so sorry you're hurting, friend. Your pain is real and it matters to God — He sees every tear.\n\n**Psalm 34:18 (ESV):** \"The Lord is near to the brokenhearted and saves the crushed in spirit.\"\n\nGod doesn't promise to take away all pain immediately, but He promises to be near to you in it. You are not alone in this darkness.\n\nWhat's been the hardest part of what you're going through?";
+        return {
+          response,
+          includeVerse: true
+        };
+      }
+
+      // General faith questions
+      if (input.includes('faith') || input.includes('believe') || input.includes('god') || input.includes('jesus')) {
+        const verse = await getRandomVerse();
+        if (verse) {
+          const response = `Faith questions are so beautiful — they show a heart that's seeking truth.\n\n**${verse.verse_reference}:** "${verse.english_text}"\n\n${verse.english_devotion}\n\nWhat aspects of faith are you curious about or struggling with?`;
+          return {
+            response,
+            includeVerse: true
+          };
+        }
+      }
+
+      // Default response with follow-up question
+      const verse = await getRandomVerse();
+      const defaultResponse = "Thank you for sharing that with me, beloved. I'm here to walk alongside you in whatever you're experiencing.\n\nWhat would be most helpful for you right now — a word of encouragement, prayer, or maybe diving into Scripture together?";
       return {
-        response: defaultResponses[Math.floor(Math.random() * defaultResponses.length)],
+        response: defaultResponse,
         includeVerse: false
       };
     } else {
-      // Amharic varied responses
-      const amharicResponses = [
-        "እዚህ ከእርስዎ ጋር ነኝ። ሌላ ምን አለ በአእምሮዎ ላይ?",
-        "ይህን ስላካፈሉኝ አመሰግናለሁ። አሁን ምን ይረዳዎታል?",
-        "ያን ስላካፈሉኝ አድርጋለሁ። ስለ ሁሉም እንዴት ይሰማዎታል?",
-        "ለመሸከም ብዙ ነው። በጣም አስቸጋሪው ምን ነበር?",
-        "እዚህ መሆንዎ ደስ ይለኛል። ዛሬ በጣም የሚያስፈልግዎት ምንድን ነው?"
-      ];
-      
+      // Amharic responses - simplified for now
       return {
-        response: amharicResponses[Math.floor(Math.random() * amharicResponses.length)],
+        response: "እዚህ ከእርስዎ ጋር ነኝ፣ ውድ ወዳጅ። ዛሬ እንዴት ልረዳዎት እችላለሁ?",
         includeVerse: false
       };
     }
@@ -245,8 +229,8 @@ const ChristianChatBot = () => {
     setLoading(true);
 
     try {
-      // Generate contextual response
-      const { response, includeVerse } = generateConversationalResponse(currentInput, messages);
+      // Generate GraceGuide response
+      const { response, includeVerse } = await generateGraceGuideResponse(currentInput, messages);
       
       let verseData = undefined;
       let finalResponse = response;
@@ -308,10 +292,10 @@ const ChristianChatBot = () => {
           </div>
           <div>
             <h2 className="font-semibold text-lg">
-              {language === 'english' ? 'Christian Devotion Companion' : 'የክርስቶስ ወንድምማሪ አጋር'}
+              {language === 'english' ? 'GraceGuide - Your Christian Companion' : 'ግሬስጋይድ - የእርስዎ የክርስቲያን አጋር'}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {language === 'english' ? 'Bible verses & spiritual guidance' : 'የመጽሐፍ ቅዱስ ጥቅሶች እና መንፈሳዊ መምሪያ'}
+              {language === 'english' ? 'Scripture, devotionals & faith encouragement' : 'ስክሪፕቸር፣ ወንድምማሪና የእምነት መበረታት'}
             </p>
           </div>
         </div>
@@ -392,8 +376,8 @@ const ChristianChatBot = () => {
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={
               language === 'english' 
-                ? "Share what's on your heart, ask for prayer, or request a Bible verse..."
-                : "በልብዎ ያለውን ያካፍሉ፣ ጸሎት ይጠይቁ፣ ወይም የመጽሐፍ ቅዱስ ጥቅስ ይጠይቁ..."
+                ? "Ask about faith, request a devotion, or share what's on your heart..."
+                : "ስለ እምነት ይጠይቁ፣ ወንድምማሪ ይጠይቁ፣ ወይም በልብዎ ያለውን ያካፍሉ..."
             }
             disabled={loading}
             className="flex-1"
