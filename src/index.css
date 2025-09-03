@@ -74,41 +74,41 @@
   }
 
   .dark {
-    /* Dark mode - peaceful night prayer theme */
-    --background: 210 25% 8%;
-    --foreground: 210 15% 92%;
+    /* Dark mode - peaceful purple prayer theme */
+    --background: 270 25% 8%;
+    --foreground: 270 15% 92%;
 
-    --card: 210 20% 12%;
-    --card-foreground: 210 15% 92%;
+    --card: 270 20% 12%;
+    --card-foreground: 270 15% 92%;
 
-    --popover: 210 20% 12%;
-    --popover-foreground: 210 15% 92%;
+    --popover: 270 20% 12%;
+    --popover-foreground: 270 15% 92%;
 
-    --primary: 210 80% 60%;
-    --primary-foreground: 210 25% 8%;
-    --primary-glow: 210 70% 70%;
+    --primary: 270 80% 65%;
+    --primary-foreground: 270 25% 8%;
+    --primary-glow: 280 70% 75%;
 
-    --secondary: 45 85% 65%;
-    --secondary-foreground: 210 25% 8%;
+    --secondary: 290 85% 70%;
+    --secondary-foreground: 270 25% 8%;
 
-    --muted: 210 15% 18%;
-    --muted-foreground: 210 10% 65%;
+    --muted: 270 15% 18%;
+    --muted-foreground: 270 10% 65%;
 
-    --accent: 150 55% 55%;
-    --accent-foreground: 210 25% 8%;
+    --accent: 260 60% 60%;
+    --accent-foreground: 270 25% 8%;
 
-    --chat-user: 210 80% 60%;
-    --chat-user-foreground: 210 25% 8%;
-    --chat-bot: 210 20% 12%;
-    --chat-bot-foreground: 210 15% 92%;
+    --chat-user: 270 80% 65%;
+    --chat-user-foreground: 270 25% 8%;
+    --chat-bot: 270 20% 12%;
+    --chat-bot-foreground: 270 15% 92%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 80% 60%), hsl(45 85% 65%));
-    --gradient-chat: linear-gradient(180deg, hsl(210 25% 8%), hsl(210 20% 10%));
-    --gradient-accent: linear-gradient(45deg, hsl(210 80% 60%), hsl(150 55% 55%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 80% 65%), hsl(290 85% 70%));
+    --gradient-chat: linear-gradient(180deg, hsl(270 25% 8%), hsl(270 20% 10%));
+    --gradient-accent: linear-gradient(45deg, hsl(270 80% 65%), hsl(260 60% 60%));
 
-    --shadow-gentle: 0 4px 20px -2px hsl(210 80% 60% / 0.3);
+    --shadow-gentle: 0 4px 20px -2px hsl(270 80% 65% / 0.3);
     --shadow-chat: 0 2px 12px -2px hsl(0 0% 0% / 0.4);
-    --shadow-button: 0 4px 12px -2px hsl(210 80% 60% / 0.4);
+    --shadow-button: 0 4px 12px -2px hsl(270 80% 65% / 0.4);
 
     --destructive: 0 70% 70%;
     --destructive-foreground: 270 25% 8%;
@@ -117,14 +117,14 @@
     --input: 270 15% 18%;
     --ring: 270 80% 70%;
 
-    --sidebar-background: 210 20% 6%;
-    --sidebar-foreground: 210 15% 92%;
-    --sidebar-primary: 210 80% 60%;
-    --sidebar-primary-foreground: 210 25% 8%;
-    --sidebar-accent: 210 15% 15%;
-    --sidebar-accent-foreground: 210 15% 92%;
-    --sidebar-border: 210 15% 18%;
-    --sidebar-ring: 210 80% 60%;
+    --sidebar-background: 270 20% 6%;
+    --sidebar-foreground: 270 15% 92%;
+    --sidebar-primary: 270 80% 65%;
+    --sidebar-primary-foreground: 270 25% 8%;
+    --sidebar-accent: 270 15% 15%;
+    --sidebar-accent-foreground: 270 15% 92%;
+    --sidebar-border: 270 15% 18%;
+    --sidebar-ring: 270 80% 65%;
   }
 }
 
