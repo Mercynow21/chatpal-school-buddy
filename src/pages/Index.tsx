@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import ChristianChatBot from '@/components/ChristianChatBot';
+import SettingsDialog from '@/components/SettingsDialog';
 import { Cross, LogOut, Settings, Crown, Moon, Sun } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -11,6 +12,7 @@ import { useTheme } from 'next-themes';
 const Index = () => {
   const { user, profile, loading, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   if (loading) {
     return (
@@ -64,7 +66,11 @@ const Index = () => {
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
             
-            <Button variant="outline" size="icon">
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setSettingsOpen(true)}
+            >
               <Settings className="w-4 h-4" />
             </Button>
             
@@ -78,6 +84,11 @@ const Index = () => {
       <main className="flex-1 flex flex-col">
         <ChristianChatBot />
       </main>
+      
+      <SettingsDialog 
+        open={settingsOpen} 
+        onOpenChange={setSettingsOpen} 
+      />
     </div>
   );
 };
