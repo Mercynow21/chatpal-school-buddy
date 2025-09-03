@@ -13,13 +13,19 @@ serve(async (req) => {
   }
 
   try {
-    console.log("[CREATE-CHECKOUT] Function started");
+    console.log("[CREATE-CHECKOUT] Function started v2");
+    
+    // List all available environment variables for debugging
+    console.log("[CREATE-CHECKOUT] Available env vars:", Object.keys(Deno.env.toObject()));
     
     // Check if Stripe secret key is available
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     console.log("[CREATE-CHECKOUT] Stripe key available:", !!stripeKey);
-    if (!stripeKey) {
-      throw new Error("STRIPE_SECRET_KEY environment variable is not set");
+    console.log("[CREATE-CHECKOUT] Stripe key length:", stripeKey?.length || 0);
+    
+    if (!stripeKey || stripeKey.trim() === "") {
+      console.error("[CREATE-CHECKOUT] STRIPE_SECRET_KEY is missing or empty");
+      throw new Error("STRIPE_SECRET_KEY environment variable is not set or is empty");
     }
 
     const supabaseClient = createClient(
