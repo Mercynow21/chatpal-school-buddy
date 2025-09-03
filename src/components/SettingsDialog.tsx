@@ -69,30 +69,65 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onOpenChange }) =
     }
   };
 
-  const handleCancelSubscription = async () => {
+  const handleSubscribe = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start checkout process. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
     if (!user) return;
     
     setCancelling(true);
     try {
-      // Call customer portal for subscription management
-      const { data, error } = await supabase.functions.invoke('customer-portal');
+      const { data: { session } } = await supabase.auth.getSession();
       
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+
       if (error) {
-        toast({
-          title: "Error",
-          description: "Unable to access subscription management. Please contact support.",
-          variant: "destructive",
-        });
-        return;
+        throw error;
       }
 
       if (data?.url) {
+        // Open the customer portal in a new tab
         window.open(data.url, '_blank');
       }
     } catch (error) {
+      console.error('Error opening customer portal:', error);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Failed to open subscription management. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -222,7 +257,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onOpenChange }) =
                           </div>
                           <Button 
                             variant="outline" 
-                            onClick={handleCancelSubscription}
+                            onClick={handleManageSubscription}
                             disabled={cancelling}
                             className="w-full"
                           >
@@ -244,8 +279,19 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onOpenChange }) =
                             <p className="font-medium text-foreground">Ready to Continue?</p>
                             <p>Subscribe to continue your spiritual journey with unlimited access to devotionals and study plans.</p>
                           </div>
-                          <Button className="w-full">
-                            Subscribe Now
+                          <Button 
+                            className="w-full" 
+                            onClick={handleSubscribe}
+                            disabled={loading}
+                          >
+                            {loading ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Starting Checkout...
+                              </>
+                            ) : (
+                              'Subscribe Now'
+                            )}
                           </Button>
                         </div>
                       )}
