@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import ChristianChatBot from '@/components/ChristianChatBot';
-import { Cross, LogOut, Settings, Crown } from 'lucide-react';
+import { Cross, LogOut, Settings, Crown, Moon, Sun } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const Index = () => {
   const { user, profile, loading, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   if (loading) {
     return (
@@ -53,6 +55,14 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
             
             <Button variant="outline" size="icon">
               <Settings className="w-4 h-4" />
