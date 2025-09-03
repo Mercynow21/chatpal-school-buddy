@@ -90,6 +90,86 @@ const ChristianChatBot = () => {
     }
   };
 
+  const generateConversationalResponse = (userInput: string): { response: string; includeVerse: boolean } => {
+    const input = userInput.toLowerCase();
+    
+    // Keywords that suggest the user wants a Bible verse
+    const verseKeywords = ['verse', 'scripture', 'bible', 'word of god', 'passage'];
+    const includeVerse = verseKeywords.some(keyword => input.includes(keyword));
+    
+    // Generate contextual responses based on user input
+    if (language === 'english') {
+      if (input.includes('pray') || input.includes('prayer')) {
+        return {
+          response: "Prayer is such a powerful way to connect with God! I'd be honored to pray with you. What's on your heart that you'd like to bring to the Lord? Remember, He hears every word and knows your needs even before you speak them.",
+          includeVerse: true
+        };
+      }
+      
+      if (input.includes('worry') || input.includes('anxious') || input.includes('stress')) {
+        return {
+          response: "I understand that you're feeling worried right now. It's completely natural to feel anxious sometimes, but remember that God wants to carry these burdens for you. Have you tried bringing these concerns to Him in prayer? Sometimes just talking to God about our worries can bring such peace.",
+          includeVerse: true
+        };
+      }
+      
+      if (input.includes('sad') || input.includes('depressed') || input.includes('down')) {
+        return {
+          response: "I can hear that you're going through a difficult time, and I want you to know that your feelings are valid. God sees your pain and He's with you in this season. Even when we can't feel His presence, He promises never to leave us. Would you like to talk more about what's weighing on your heart?",
+          includeVerse: true
+        };
+      }
+      
+      if (input.includes('thank') || input.includes('grateful') || input.includes('blessing')) {
+        return {
+          response: "What a beautiful heart of gratitude you have! It's so wonderful to hear you recognizing God's blessings in your life. Gratitude really does transform our perspective, doesn't it? I'd love to celebrate these blessings with you - what has God been doing in your life lately?",
+          includeVerse: false
+        };
+      }
+      
+      if (input.includes('forgive') || input.includes('guilt') || input.includes('mistake')) {
+        return {
+          response: "Forgiveness is at the very heart of the Gospel, and I'm so glad you're seeking it. God's love for you is unchanging, and His forgiveness is complete when we come to Him with repentant hearts. Have you been able to bring this situation to God in prayer? Sometimes talking through our guilt can help us receive His grace.",
+          includeVerse: true
+        };
+      }
+      
+      if (input.includes('love') || input.includes('relationship') || input.includes('family')) {
+        return {
+          response: "Relationships are such a gift from God, aren't they? Whether you're celebrating love or working through challenges, God wants to be part of your relationships. He designed us for connection and community. What's happening in your relationships that you'd like to talk about or pray over?",
+          includeVerse: false
+        };
+      }
+      
+      // Default conversational response
+      return {
+        response: "Thank you for sharing that with me. I'm here to walk alongside you in your faith journey. Sometimes it helps just to have someone listen and pray with us. What's been on your heart lately? I'd love to hear more about what God is doing in your life or how I can support you in prayer.",
+        includeVerse: Math.random() > 0.7 // 30% chance of including a verse
+      };
+    } else {
+      // Amharic responses
+      if (input.includes('ጸሎት') || input.includes('እጸልያለሁ')) {
+        return {
+          response: "ጸሎት ከእግዚአብሔር ጋር ለመገናኘት በጣም ኃይለኛ መንገድ ነው! ከእርስዎ ጋር ልጸልይ ክብር ይሆንልኛል። ወደ እግዚአብሔር ልታመጡት የምትፈልጉት ምንድን ነው? እሱ እያንዳንዱን ቃል እንደሚሰማ እና ከመናገርዎ በፊት ፍላጎትዎን እንደሚያውቁ ያስታውሱ።",
+          includeVerse: true
+        };
+      }
+      
+      if (input.includes('ጭንቀት') || input.includes('ሰጋ')) {
+        return {
+          response: "አሁን ያለዎትን ጭንቀት ተረድቻለሁ። አንዳንድ ጊዜ ጭንቀት መሰማት ፈጽሞ ተፈጥሯዊ ነው፣ ነገር ግን እግዚአብሔር እነዚህን ሸክሞች ለእርስዎ መሸከም እንደሚፈልግ ያስታውሱ። እነዚህን ጉዳዮች በጸሎት ወደ እሱ ማምጣት ሞክረው ያውቃሉ? አንዳንድ ጊዜ ጭንቀታችንን ለእግዚአብሔር መናገር ብቻ ታላቅ ሰላም ማምጣት ይችላል።",
+          includeVerse: true
+        };
+      }
+      
+      // Default Amharic response
+      return {
+        response: "ይህን ከእኔ ጋር ስላካፈሉ አመሰግናለሁ። በእምነት ጉዞዎ ላይ ከእርስዎ ጎን ለመሆን እዚህ ነኝ። አንዳንድ ጊዜ አንድ ሰው እንዲሰማን እና እንዲጸልይልን ብቻ መኖር ይረዳል። በቅርቡ ልብዎን ላይ ያለው ምንድን ነው? እግዚአብሔር በህይወትዎ ያለውን ወይም በጸሎት እንዴት ልደግፍዎ እንደምችል የበለጠ ለመስማት እወዳለሁ።",
+        includeVerse: Math.random() > 0.7
+      };
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim() || loading) return;
@@ -102,40 +182,42 @@ const ChristianChatBot = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue('');
     setLoading(true);
 
     try {
-      // Get a random Bible verse for the response
-      const verse = await getRandomVerse();
+      // Generate contextual response
+      const { response, includeVerse } = generateConversationalResponse(currentInput);
       
-      let botResponse = '';
       let verseData = undefined;
+      let finalResponse = response;
 
-      if (verse) {
-        const text = language === 'english' ? verse.english_text : verse.amharic_text;
-        const devotion = language === 'english' ? verse.english_devotion : verse.amharic_devotion;
-        
-        verseData = {
-          reference: verse.verse_reference,
-          text,
-          devotion
-        };
+      // Only include a verse if the context suggests it would be helpful
+      if (includeVerse) {
+        const verse = await getRandomVerse();
+        if (verse) {
+          const text = language === 'english' ? verse.english_text : verse.amharic_text;
+          const devotion = language === 'english' ? verse.english_devotion : verse.amharic_devotion;
+          
+          verseData = {
+            reference: verse.verse_reference,
+            text,
+            devotion
+          };
 
-        if (language === 'english') {
-          botResponse = `Here's a verse that came to mind for you:\n\n"${text}" - ${verse.verse_reference}\n\n${devotion}\n\nMay this verse bring you peace and encouragement today. Is there anything specific you'd like to pray about or discuss?`;
-        } else {
-          botResponse = `ለእርስዎ በአሳብ የመጣኝ ጥቅስ እነሆ፤\n\n"${text}" - ${verse.verse_reference}\n\n${devotion}\n\nይህ ጥቅስ ዛሬ ሰላምና ድፍረት ያመጣልዎ ዘንድ እመኛለሁ። በተለይ ልትጸልዩለት ወይም ልንወያይባቸው የምትፈልጉ ነገሮች አሉ?`;
+          // Add verse context to response
+          if (language === 'english') {
+            finalResponse += `\n\nThis verse came to mind: "${text}" - ${verse.verse_reference}`;
+          } else {
+            finalResponse += `\n\nይህ ጥቅስ አሰብኩ: "${text}" - ${verse.verse_reference}`;
+          }
         }
-      } else {
-        botResponse = language === 'english'
-          ? "I'm here to support you with biblical encouragement and prayer. How can I help you grow in your faith today?"
-          : "በመጽሐፍ ቅዱሳዊ ውበት እና በጸሎት ልደግፍዎ ዝግጁ ነኝ። ዛሬ በእምነትዎ እንዴት እንድታደጉ ልረዳዎት እችላለሁ?";
       }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: botResponse,
+        content: finalResponse,
         isUser: false,
         timestamp: new Date(),
         verse: verseData,
