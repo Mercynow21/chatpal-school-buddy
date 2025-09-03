@@ -2,53 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ChatPal Design System - Kid-friendly educational colors and styles */
+/* Christian Devotion Bot - Peaceful, spiritual design system */
 
 @layer base {
   :root {
-    /* Main background - soft cream white */
-    --background: 45 23% 97%;
-    --foreground: 270 15% 25%;
+    /* Main background - pure white with warm undertones */
+    --background: 45 15% 98%;
+    --foreground: 210 15% 20%;
 
-    /* Cards with subtle warmth */
+    /* Cards with gentle warmth */
     --card: 0 0% 100%;
-    --card-foreground: 270 15% 25%;
+    --card-foreground: 210 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 15% 25%;
+    --popover-foreground: 210 15% 20%;
 
-    /* ChatPal primary - magical purple */
-    --primary: 270 85% 60%;
+    /* Primary - deep blue representing faith and trust */
+    --primary: 210 100% 40%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 270 75% 70%;
+    --primary-glow: 210 80% 50%;
 
-    /* Secondary - soft teal for success/positive */
-    --secondary: 180 65% 45%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - warm gold representing divine light */
+    --secondary: 45 90% 55%;
+    --secondary-foreground: 210 15% 20%;
 
-    /* Muted - gentle purple-gray */
-    --muted: 260 20% 92%;
-    --muted-foreground: 270 15% 45%;
+    /* Muted - soft gray-blue */
+    --muted: 210 15% 95%;
+    --muted-foreground: 210 10% 45%;
 
-    /* Accent - warm pink for highlights */
-    --accent: 320 75% 65%;
+    /* Accent - gentle green representing growth and hope */
+    --accent: 150 60% 45%;
     --accent-foreground: 0 0% 100%;
 
     /* Chat colors */
-    --chat-user: 320 75% 65%;
+    --chat-user: 210 100% 40%;
     --chat-user-foreground: 0 0% 100%;
     --chat-bot: 0 0% 100%;
-    --chat-bot-foreground: 270 15% 25%;
+    --chat-bot-foreground: 210 15% 20%;
 
-    /* Fun gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(270 85% 60%), hsl(300 75% 65%));
-    --gradient-chat: linear-gradient(180deg, hsl(45 23% 97%), hsl(260 25% 98%));
-    --gradient-accent: linear-gradient(45deg, hsl(320 75% 65%), hsl(280 70% 70%));
+    /* Spiritual gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 40%), hsl(45 90% 55%));
+    --gradient-chat: linear-gradient(180deg, hsl(45 15% 98%), hsl(210 20% 96%));
+    --gradient-accent: linear-gradient(45deg, hsl(210 100% 40%), hsl(150 60% 45%));
 
-    /* Playful shadows */
-    --shadow-gentle: 0 4px 20px -2px hsl(270 85% 60% / 0.15);
-    --shadow-chat: 0 2px 12px -2px hsl(270 15% 25% / 0.08);
-    --shadow-button: 0 4px 12px -2px hsl(270 85% 60% / 0.3);
+    /* Peaceful shadows */
+    --shadow-gentle: 0 4px 20px -2px hsl(210 100% 40% / 0.15);
+    --shadow-chat: 0 2px 12px -2px hsl(210 15% 20% / 0.08);
+    --shadow-button: 0 4px 12px -2px hsl(210 100% 40% / 0.25);
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -74,41 +74,41 @@
   }
 
   .dark {
-    /* Dark mode - magical purple theme */
-    --background: 270 25% 8%;
-    --foreground: 280 15% 92%;
+    /* Dark mode - peaceful night prayer theme */
+    --background: 210 25% 8%;
+    --foreground: 210 15% 92%;
 
-    --card: 270 20% 12%;
-    --card-foreground: 280 15% 92%;
+    --card: 210 20% 12%;
+    --card-foreground: 210 15% 92%;
 
-    --popover: 270 20% 12%;
-    --popover-foreground: 280 15% 92%;
+    --popover: 210 20% 12%;
+    --popover-foreground: 210 15% 92%;
 
-    --primary: 270 80% 70%;
-    --primary-foreground: 270 25% 8%;
-    --primary-glow: 270 70% 80%;
+    --primary: 210 80% 60%;
+    --primary-foreground: 210 25% 8%;
+    --primary-glow: 210 70% 70%;
 
-    --secondary: 180 55% 55%;
-    --secondary-foreground: 270 25% 8%;
+    --secondary: 45 85% 65%;
+    --secondary-foreground: 210 25% 8%;
 
-    --muted: 270 15% 18%;
-    --muted-foreground: 280 10% 65%;
+    --muted: 210 15% 18%;
+    --muted-foreground: 210 10% 65%;
 
-    --accent: 320 70% 70%;
-    --accent-foreground: 270 25% 8%;
+    --accent: 150 55% 55%;
+    --accent-foreground: 210 25% 8%;
 
-    --chat-user: 320 70% 70%;
-    --chat-user-foreground: 270 25% 8%;
-    --chat-bot: 270 20% 12%;
-    --chat-bot-foreground: 280 15% 92%;
+    --chat-user: 210 80% 60%;
+    --chat-user-foreground: 210 25% 8%;
+    --chat-bot: 210 20% 12%;
+    --chat-bot-foreground: 210 15% 92%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(270 80% 70%), hsl(300 70% 75%));
-    --gradient-chat: linear-gradient(180deg, hsl(270 25% 8%), hsl(270 20% 10%));
-    --gradient-accent: linear-gradient(45deg, hsl(320 70% 70%), hsl(280 65% 75%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 80% 60%), hsl(45 85% 65%));
+    --gradient-chat: linear-gradient(180deg, hsl(210 25% 8%), hsl(210 20% 10%));
+    --gradient-accent: linear-gradient(45deg, hsl(210 80% 60%), hsl(150 55% 55%));
 
-    --shadow-gentle: 0 4px 20px -2px hsl(270 80% 70% / 0.3);
+    --shadow-gentle: 0 4px 20px -2px hsl(210 80% 60% / 0.3);
     --shadow-chat: 0 2px 12px -2px hsl(0 0% 0% / 0.4);
-    --shadow-button: 0 4px 12px -2px hsl(270 80% 70% / 0.5);
+    --shadow-button: 0 4px 12px -2px hsl(210 80% 60% / 0.4);
 
     --destructive: 0 70% 70%;
     --destructive-foreground: 270 25% 8%;
@@ -117,14 +117,14 @@
     --input: 270 15% 18%;
     --ring: 270 80% 70%;
 
-    --sidebar-background: 270 20% 6%;
-    --sidebar-foreground: 280 15% 92%;
-    --sidebar-primary: 270 80% 70%;
-    --sidebar-primary-foreground: 270 25% 8%;
-    --sidebar-accent: 270 15% 15%;
-    --sidebar-accent-foreground: 280 15% 92%;
-    --sidebar-border: 270 15% 18%;
-    --sidebar-ring: 270 80% 70%;
+    --sidebar-background: 210 20% 6%;
+    --sidebar-foreground: 210 15% 92%;
+    --sidebar-primary: 210 80% 60%;
+    --sidebar-primary-foreground: 210 25% 8%;
+    --sidebar-accent: 210 15% 15%;
+    --sidebar-accent-foreground: 210 15% 92%;
+    --sidebar-border: 210 15% 18%;
+    --sidebar-ring: 210 80% 60%;
   }
 }
 
